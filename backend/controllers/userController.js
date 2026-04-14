@@ -8,11 +8,11 @@ const JWT_SECRET = "your_jwt_secret_key";
 const TOCKEN_EXPIRY = "24h";
 
 const createToken = (userId) => {
-    return jwt.sign({ id:userId }, JWT_SECRET, { expiresIn: TOCKEN_EXPIRY });
+    jwt.sign({ id:userId }, JWT_SECRET, { expiresIn: TOCKEN_EXPIRY });
 }
 
 
-
+//to register a new user
 export async function registerUser(req, res) {
     const { name, email, password } = req.body; 
     if(!name || !email || !password) {
@@ -43,12 +43,8 @@ export async function registerUser(req, res) {
             })
         }
 
-        const hashed = await bcrypt.hash(password, 10);
-        const user = await User.create({
-            name,
-            email,
-            password: hashed
-        })  
+        const hashed = await bcrypt.hash(password, 10);  //by adding salt to the password we can make it more secure and harder to crack
+        const user = await User.create({name,email,password: hashed});  
 
         const token = createToken(user._id);
 
