@@ -1,5 +1,5 @@
 import express from "express";
-import authMiddleware from "../middleware/authMiddleware.js";
+import authMiddleware from "../middleware/auth.js";
 import { addIncome, deleteIncome, downloadIncomeExcel, getAllIncomes, getIncomeOverview, updateIncome } from "../controllers/incomeController.js";
 
 const incomeRouter = express.Router();
