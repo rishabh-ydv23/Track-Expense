@@ -24,7 +24,7 @@ connectDB();
 
 
 
-//ROUTES
+//ROUTES 
 app.use("/api/user", userRouter);
 app.use("/api/income", incomeRouter);
 app.use("/api/expense", expenseRouter);

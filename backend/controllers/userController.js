@@ -11,7 +11,7 @@ const createToken = (userId) => {
     jwt.sign({ id:userId }, JWT_SECRET, { expiresIn: TOCKEN_EXPIRY });
 }
 
-
+ 
 //to register a new user
 export async function registerUser(req, res) {
     const { name, email, password } = req.body; 
@@ -67,7 +67,7 @@ export async function registerUser(req, res) {
 
 
 
-//to login as user
+//to login a user
 export async function loginUser(req, res) {
     const { email, password } = req.body;   
     if(!email || !password) {

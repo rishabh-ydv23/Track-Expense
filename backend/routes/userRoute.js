@@ -15,3 +15,4 @@ userRouter.put("/password",authMiddleware,updatePassword);
 
 export default userRouter;
 
+ 
