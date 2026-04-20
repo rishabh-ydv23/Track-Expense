@@ -1,4 +1,4 @@
-import incomeModel from "../models/IncomeModel.js";
+import incomeModel from "../models/incomeModel.js";
 import XLSX from "xlsx";
 import getDateRange from "../utils/dataFilter.js";
 import { startSession } from "mongoose";
@@ -94,7 +94,7 @@ export async function updateIncome(req, res) {
 //to delete an income
 export async function deleteIncome(req, res) {
     try {
-        const income = await incomeModel.findByIdAndDelete({ _id: req.params.is });
+        const income = await incomeModel.findByIdAndDelete({ _id: req.params.id });
         if (!income) {
             return res.status(404).json({
                 success: false,

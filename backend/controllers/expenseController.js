@@ -91,8 +91,10 @@ export async function updateExpense(req, res) {
 
 //to delete an expense
 export async function deleteExpense(req, res) {
+    const id = req.params.id;
+    const userId = req.user.id;
     try {
-        const expense = await expenseModel.findByIdAndDelete({ _id: req.params.id }); // fixed typo from incomeController (req.params.is)
+        const expense = await expenseModel.findByIdAndDelete({ _id: id, userId });
         if (!expense) {
             return res.status(404).json({
                 success: false,
@@ -117,7 +119,7 @@ export async function deleteExpense(req, res) {
 export async function downloadExpenseExcel(req, res) {
     const userId = req.user.id;
     try {
-        const expenses = (await expenseModel.find({ userId })).toSorted({ date: -1 });
+        const expenses = (await expenseModel.find({ userId })).sort({ date: -1 });
         const plainData = expenses.map((exp) => ({
             Description: exp.description,
             Amount: exp.amount,
