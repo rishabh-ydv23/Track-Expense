@@ -19,11 +19,9 @@ export const App = () => {
     catch (error) {
       console.log(error);
     }
+    setUser(null);
+    setToken(null);
   }
-
-  setUser(null);
-  setToken(null);
-
 
 
   const handleLogout = () => {
