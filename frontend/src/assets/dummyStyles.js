@@ -434,11 +434,11 @@ export const navbarStyles = {
   chevronIcon: (isOpen) => `w-4 h-4 text-gray-500 transition-transform ${isOpen ? "rotate-180" : ""}`,
   
   // Dropdown menu styles
-  dropdownMenu: "absolute top-14 right-0 w-56 bg-white rounded-xl shadow-lg border border-gray-100 z-50",
+  dropdownMenu: "absolute top-14 right-0 w-64 bg-white rounded-xl shadow-lg border border-gray-100 z-50",
   dropdownHeader: "px-4 py-3 border-b border-gray-100",
-  dropdownAvatar: "w-10 h-10 rounded-full bg-gradient-to-br from-teal-600 to-cyan-500 flex items-center justify-center text-white font-bold text-lg",
-  dropdownName: "text-sm text-gray-800 ",
-  dropdownEmail: "text-xs text-gray-500",
+  dropdownAvatar: "w-10 h-10 flex-shrink-0 rounded-full bg-gradient-to-br from-teal-600 to-cyan-500 flex items-center justify-center text-white font-bold text-lg",
+  dropdownName: "text-sm font-medium text-gray-800 truncate",
+  dropdownEmail: "text-xs text-gray-500 truncate",
   
   // Menu items
   menuItemContainer: "p-1.5",

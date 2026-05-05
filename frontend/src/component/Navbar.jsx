@@ -1,7 +1,11 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { navbarStyles } from '../assets/dummyStyles.js'
+import { ChevronDown, User, LogOut } from 'lucide-react';
 import img1 from '../assets/logo.png'
+import axios from 'axios'
+const BASE_URL = "http://localhost:3000/api"
+
 
 const Navbar = ({ user: propUser, onLogout }) => {
     const navigate = useNavigate();
@@ -13,9 +17,48 @@ const Navbar = ({ user: propUser, onLogout }) => {
         email: ""
     };
 
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) return;
+
+                const response = await axios.get(`${BASE_URL}/users/me`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const userData = response.data.user || response.data;
+                setUser(userData);
+            } catch (error) {
+                console.log("Failed to load profile", error);
+            }
+        };
+
+        if (!propUser) {
+            fetchUserData();
+        }
+    }, [propUser])
+
     const toggleMenu = () => {
         setMenuOpen((prev) => !prev);
     };
+
+    const handleLogout = () => {
+        setMenuOpen(false);
+        localStorage.removeItem("token");
+        onLogout?.();
+        navigate("/login");
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (menuRef.current && !menuRef.current.contains(e.target)) {
+                setMenuOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     return (
         <header className={navbarStyles.header}>
@@ -48,15 +91,56 @@ const Navbar = ({ user: propUser, onLogout }) => {
 
                             <div className={navbarStyles.userArrow}></div>
 
+                            <ChevronDown className={navbarStyles.chevronIcon(menuOpen)} />
                         </button>
+
+                        {/* dropdown menu */}
+                        {menuOpen && (
+                            <div className={navbarStyles.dropdownMenu}>
+                                <div className={navbarStyles.dropdownHeader}>
+                                    <div className="flex items-center gap-3">
+                                        <div className={navbarStyles.dropdownAvatar}>
+                                            {user?.name?.[0]?.toUpperCase() || "U"}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <div className={navbarStyles.dropdownName}>
+                                                {user?.name || "User"}
+                                            </div>
+                                            <div className={navbarStyles.dropdownEmail}>
+                                                {user.email || "user@expensetracker.com"}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={navbarStyles.menuItemContainer}>
+                                    <button onClick={() => {
+                                        setMenuOpen(false);
+                                        navigate("/profile");
+                                    }} className={navbarStyles.menuItem}
+                                    >
+                                        <User className="w-4 h-4" />
+                                        <span>My Profile</span>
+                                    </button>
+                                </div>
+
+                                <div className={navbarStyles.menuItemBorder}>
+                                    <button onClick={handleLogout} className={navbarStyles.logoutButton}>
+                                        <LogOut className="w-4 h-4" />
+                                        <span>Log Out</span>
+                                    </button>
+                                </div>
+
+                            </div>
+                        )}
 
 
                     </div>
                 )}
 
             </div>
-        </header>
+        </header >
     )
 }
 
-export default Navbar
+export default Navbar;
