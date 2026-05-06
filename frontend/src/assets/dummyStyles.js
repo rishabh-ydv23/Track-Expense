@@ -607,7 +607,7 @@ export const sidebarStyles = {
   },
   
   mobileHeader: "p-6 flex justify-between items-center border-b border-gray-100",
-  mobileUserContainer: "flex pt-28 items-center gap-3",
+  mobileUserContainer: "flex items-center gap-3",
   mobileCloseButton: "p-2 rounded-lg hover:bg-gray-100",
   
   mobileMenuList: "space-y-1",
