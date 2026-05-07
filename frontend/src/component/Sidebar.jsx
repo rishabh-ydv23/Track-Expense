@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { sidebarStyles, cn } from "../assets/dummyStyles";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Home, ArrowUp, ArrowDown, User, HelpCircle, LogOut, X, Menu } from "lucide-react";
