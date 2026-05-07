@@ -12,7 +12,9 @@ const Navbar = ({ user: propUser, onLogout }) => {
     const menuRef = useRef();
     const [menuOpen, setMenuOpen] = useState(false);
 
-    const user = propUser || {
+    const [userState, setUser] = useState(null);
+
+    const user = propUser || userState || {
         name: "",
         email: ""
     };
