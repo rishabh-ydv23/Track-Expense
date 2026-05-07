@@ -8,7 +8,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { LineChart, Line } from 'recharts';
 import { PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, DollarSign, ArrowUp, ArrowDown, PiggyBank, Home, ShoppingCart, Utensils, Car, Gift, Zap, Activity, CreditCard, Clock, RefreshCw, Info, Filter, ChevronDown } from 'lucide-react';
-import { Outlet, useOutletContext } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 const API_BASE = "http://localhost:3000/api"
 const CATEGORY_ICONS = {
