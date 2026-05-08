@@ -6,7 +6,7 @@ import Login from './component/Login'
 import axios from 'axios'
 import Signup from './component/Signup'
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = "http://localhost:4000/api";
 
 //to get transaction from local storage
 const getTransactionsFromStorage = () => {
@@ -118,12 +118,11 @@ export const App = () => {
         if (storedUser) {
           setUser(storedUser);
           setToken(storedToken);
-          setIsLoading(false);
         }
 
         if (storedToken) {
           try {
-            const res = await axios.get(`${API_URL}/api/user/me`, {
+            const res = await axios.get(`${API_URL}/user/me`, {
               headers: { Authorization: `Bearer ${storedToken}` }
             });
             const profile = res.data;
@@ -205,21 +204,21 @@ export const App = () => {
 
         <Route element={
           <ProtectedRoute user={user}>
-            <Layout 
-              user={user} 
+            <Layout
+              user={user}
               onLogout={handleLogout}
               transactions={transactions}
               addTransaction={addTransaction}
               editTransaction={editTransaction}
               deleteTransaction={deleteTransaction}
-              refreshTransactions={refreshTransactions} 
+              refreshTransactions={refreshTransactions}
             />
           </ProtectedRoute>
         }>
           <Route
             path="/"
             element={
-              <Dashboard 
+              <Dashboard
                 transactions={transactions}
                 addTransaction={addTransaction}
                 editTransaction={editTransaction}
@@ -229,6 +228,49 @@ export const App = () => {
             }
           />
         </Route>
+
+
+        <Route
+          path="/income"
+          element={
+            <Income
+              transactions={transactions}
+              addTransaction={addTransaction}
+              editTransaction={editTransaction}
+              deleteTransaction={deleteTransaction}
+              refreshTransactions={refreshTransactions}
+            />
+          }
+        />
+
+        <Route
+          path="/expense"
+          element={
+            <Expense
+              transactions={transactions}
+              addTransaction={addTransaction}
+              editTransaction={editTransaction}
+              deleteTransaction={deleteTransaction}
+              refreshTransactions={refreshTransactions}
+            />
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <Profile
+              user={user}
+              onUpdateProfile={updateUserData}
+              onLogout={handleLogout}
+            />
+          }
+        />
+
+        <Route
+          path="*"
+          element={<Navigate to={user ? "/" : "/login"} replace />}
+        />
 
       </Routes>
     </>
