@@ -1,7 +1,7 @@
 import incomeModel from "../models/incomeModel.js";
 import XLSX from "xlsx";
 import getDateRange from "../utils/dataFilter.js";
-import { startSession } from "mongoose";
+import { isValidObjectId } from "../utils/validation.js";
 
 
 export async function addIncome(req, res) {
@@ -64,7 +64,14 @@ export async function getAllIncomes(req, res) {
 export async function updateIncome(req, res) {
     const { id } = req.params;
     const userId = req.user.id;
-    const { description, amount, date, category } = req.body;
+    const { description, amount } = req.body;
+
+    if (!isValidObjectId(id)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid income id"
+        });
+    }
 
     try {
         const updatedIncome = await incomeModel.findOneAndUpdate(
@@ -94,7 +101,14 @@ export async function updateIncome(req, res) {
 //to delete an income
 export async function deleteIncome(req, res) {
     try {
-        const income = await incomeModel.findByIdAndDelete({ _id: req.params.id });
+        const { id } = req.params;
+        if (!isValidObjectId(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid income id"
+            });
+        }
+        const income = await incomeModel.findOneAndDelete({ _id: id, userId: req.user.id });
         if (!income) {
             return res.status(404).json({
                 success: false,
@@ -119,7 +133,7 @@ export async function deleteIncome(req, res) {
 export async function downloadIncomeExcel(req, res) {
     const userId = req.user.id;
     try {
-        const income = (await incomeModel.find({ userId })).toSorted({ date: -1 });
+        const income = await incomeModel.find({ userId }).sort({ date: -1 }).lean();
         const plainData = income.map((inc) => ({
             Description: inc.description,
             Amount: inc.amount,
@@ -131,8 +145,10 @@ export async function downloadIncomeExcel(req, res) {
         const worksheet = XLSX.utils.json_to_sheet(plainData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "incomeModel");
-        XLSX.writeFile(workbook, "income_details.xlsx");
-        res.download("income_details.xlsx");
+        const buf = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
+        res.setHeader("Content-Disposition", "attachment; filename=income_details.xlsx");
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.send(Buffer.from(buf));
     }
     catch (error) {
         console.log(error);

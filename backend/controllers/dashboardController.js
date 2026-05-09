@@ -12,6 +12,11 @@ export async function getDashboardOverview(req, res) {
             date: { $gte: startOfMonth, $lte: now },
         }).lean();
 
+        const expenses = await expenseModel.find({
+            userId,
+            date: { $gte: startOfMonth, $lte: now },
+        }).lean();
+
         const monthlyIncome = incomes.reduce((acc, cur) => acc + Number(cur.amount || 0), 0);
         const monthlyExpense = expenses.reduce((acc, cur) => acc + Number(cur.amount || 0), 0);
         const savings = monthlyIncome - monthlyExpense;

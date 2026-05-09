@@ -1,7 +1,7 @@
 import expenseModel from "../models/expenseModel.js";
 import getDateRange from "../utils/dataFilter.js";
 import XLSX from "xlsx";
-import { startSession } from "mongoose";
+import { isValidObjectId } from "../utils/validation.js";
 
 //add expense
 export async function addExpense(req, res) {
@@ -64,6 +64,13 @@ export async function updateExpense(req, res) {
     const userId = req.user.id;
     const { description, amount } = req.body;
 
+    if (!isValidObjectId(id)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid expense id"
+        });
+    }
+
     try {
         const updatedExpense = await expenseModel.findOneAndUpdate(
             { _id: id, userId },
@@ -93,8 +100,14 @@ export async function updateExpense(req, res) {
 export async function deleteExpense(req, res) {
     const id = req.params.id;
     const userId = req.user.id;
+    if (!isValidObjectId(id)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid expense id"
+        });
+    }
     try {
-        const expense = await expenseModel.findByIdAndDelete({ _id: id, userId });
+        const expense = await expenseModel.findOneAndDelete({ _id: id, userId });
         if (!expense) {
             return res.status(404).json({
                 success: false,
@@ -119,7 +132,7 @@ export async function deleteExpense(req, res) {
 export async function downloadExpenseExcel(req, res) {
     const userId = req.user.id;
     try {
-        const expenses = (await expenseModel.find({ userId })).sort({ date: -1 });
+        const expenses = await expenseModel.find({ userId }).sort({ date: -1 }).lean();
         const plainData = expenses.map((exp) => ({
             Description: exp.description,
             Amount: exp.amount,
@@ -131,8 +144,10 @@ export async function downloadExpenseExcel(req, res) {
         const worksheet = XLSX.utils.json_to_sheet(plainData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "expenseModel");
-        XLSX.writeFile(workbook, "expense_details.xlsx");
-        res.download("expense_details.xlsx");
+        const buf = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
+        res.setHeader("Content-Disposition", "attachment; filename=expense_details.xlsx");
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.send(Buffer.from(buf));
     }
     catch (error) {
         console.log(error);

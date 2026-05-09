@@ -1,15 +1,14 @@
 import User from "../models/userModel.js";
-import validator from "validator";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { use } from "react";
+import validator from "validator";
 
-const JWT_SECRET = "your_jwt_secret_key";
-const TOCKEN_EXPIRY = "24h";
+const JWT_SECRET = process.env.JWT_SECRET;
+const TOKEN_EXPIRY = "24h";
 
 const createToken = (userId) => {
-    return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: TOCKEN_EXPIRY });
-}
+    return jwt.sign({ id: String(userId) }, JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
+};
 
 
 //to register a new user
