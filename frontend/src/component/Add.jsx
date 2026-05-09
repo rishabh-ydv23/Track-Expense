@@ -1,4 +1,5 @@
 import React from 'react';
+import { X } from 'lucide-react';
 import { modalStyles } from '../assets/dummyStyles';
 
 const AddTransactionModal = ({
@@ -21,11 +22,12 @@ const AddTransactionModal = ({
     const currentDate = today.toISOString().split('T')[0];
     const minDate = `${currentYear}-01-01`;
 
-    const colorClass = modalStyles.colorClasses[color];
+    const colorClass = modalStyles.colorClasses[color] || modalStyles.colorClasses.teal;
+    const submitBg = colorClass.button;
 
     return (
         <div className={modalStyles.overlay}>
-            <div className={modalStyles.modalContainer}>
+            <div className={`${modalStyles.modalContainer} max-h-[90vh] overflow-y-auto`}>
                 <div className={modalStyles.modalHeader}>
                     <h3 className={modalStyles.modalTitle}>
                         {title}
@@ -133,7 +135,7 @@ const AddTransactionModal = ({
                                 type="date"
                                 value={newTransaction.date}
                                 onChange={(e) =>
-                                    newTransaction((prev) => ({
+                                    setNewTransaction((prev) => ({
                                         ...prev,
                                         date: e.target.value
                                     }))
@@ -148,7 +150,7 @@ const AddTransactionModal = ({
 
                         <button
                             type="submit"
-                            className={modalStyles.submitButton(colorClass.bg)}>
+                            className={modalStyles.submitButton(submitBg)}>
                             {buttonText}
                         </button>
 
