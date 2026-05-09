@@ -7,8 +7,9 @@ import { Mail } from 'lucide-react';
 import { Lock } from 'lucide-react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom'
+import { API_BASE_URL, normalizeUserPayload, clearAllClientAuthKeys } from '../config/api';
 
-const Login = ({ onLogin, API_URL = "http://localhost:4000" }) => {
+const Login = ({ onLogin }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -20,16 +21,18 @@ const Login = ({ onLogin, API_URL = "http://localhost:4000" }) => {
     // to fetch profile
     const fetchProfile = async (token) => {
         if (!token) return null;
-        const res = await axios.get(`${API_URL}/api/user/me`, {
+        const res = await axios.get(`${API_BASE_URL}/user/me`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         return res.data;
     };
 
     const persistAuth = (profile, token) => {
-        const storage = rememberMe ? localStorage : sessionStorage;
         try {
-            if (token) storage.setItem("token", token);
+            clearAllClientAuthKeys();
+            const storage = rememberMe ? localStorage : sessionStorage;
+            const cleanToken = token != null ? String(token).trim() : null;
+            if (cleanToken) storage.setItem("token", cleanToken);
             if (profile) storage.setItem("user", JSON.stringify(profile));
         } catch (err) {
             console.error("Storage Error:", err);
@@ -44,7 +47,7 @@ const Login = ({ onLogin, API_URL = "http://localhost:4000" }) => {
 
         try {
             const res = await axios.post(
-                `${API_URL}/api/user/login`,
+                `${API_BASE_URL}/user/login`,
                 { email, password },
                 { headers: { "Content-Type": "application/json" } }
             );
@@ -67,18 +70,20 @@ const Login = ({ onLogin, API_URL = "http://localhost:4000" }) => {
 
             if (profile && token) {
                 try {
-                    profile = await fetchProfile(token);
+                    const raw = await fetchProfile(token);
+                    profile = normalizeUserPayload(raw) ?? { name: '', email };
                 }
                 catch (fetchError) {
                     console.warn("Could not fetch profile after login token", fetchError);
-                    profile = { email };
+                    profile = { name: '', email };
                 }
             }
-            if (!profile) profile = { email };
+            if (!profile) profile = { name: '', email };
+            profile = normalizeUserPayload(profile) ?? profile;
             persistAuth(profile, token);
             if (typeof onLogin === "function") {
                 try {
-                    onLogin(profile, token, rememberMe);
+                    onLogin(profile, rememberMe, token);
                 }
                 catch (callError) {
                     console.warn("Callback error on login", callError);
