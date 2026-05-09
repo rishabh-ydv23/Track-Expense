@@ -1,11 +1,20 @@
 import express from "express";
+import rateLimit from "express-rate-limit";
 import { getCurrentUser, loginUser, registerUser, updateProfile, updatePassword } from "../controllers/userController.js";
 import authMiddleware from "../middleware/auth.js";
 
-const userRouter=express.Router();
+const userRouter = express.Router();
 
-userRouter.post("/register", registerUser);
-userRouter.post("/login", loginUser);
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: process.env.NODE_ENV === "production" ? 30 : 200,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: "Too many attempts, try again later" },
+});
+
+userRouter.post("/register", authLimiter, registerUser);
+userRouter.post("/login", authLimiter, loginUser);
 
 
 //protected routes 
