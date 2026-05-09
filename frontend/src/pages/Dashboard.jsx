@@ -11,13 +11,7 @@ import axios from 'axios'
 import { PieChart, Pie, Cell } from 'recharts'
 import { PieChart as PieChartIcon, DollarSign, ShoppingCart, ArrowDown, Wallet, TrendingUp, TrendingDown, BarChart2, PiggyBank, ChevronUp, ChevronDown, Plus } from 'lucide-react'
 import AddTransactionModal from '../component/Add'
-const API_BASE = "http://localhost:4000/api"
-
-const getAuthHeader = () => {
-    const token =
-        localStorage.getItem("token") || localStorage.getItem("authToken");
-    return token ? { Authorization: `Bearer ${token}` } : {};
-};
+import { API_BASE_URL, getAuthHeaders } from '../config/api'
 
 // to convert date to ISO timeline
 function toIsoWithClientTime(dateValue) {
@@ -48,7 +42,7 @@ const Dashboard = () => {
         timeFrame = "monthly",
         setTimeFrame = () => { },
         refreshTransactions
-    } = useOutletContext();
+    } = useOutletContext() ?? {};
 
     const [showModal, setShowModal] = useState(false);
     const [gaugeData, setGaugeData] = useState([]);
@@ -220,8 +214,8 @@ const Dashboard = () => {
     const fetchDashboardOverview = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`${API_BASE}/dashboard`, {
-                headers: getAuthHeader(),
+            const res = await axios.get(`${API_BASE_URL}/dashboard`, {
+                headers: getAuthHeaders(),
             });
             if (res?.data?.success) {
                 const data = res.data.data;
@@ -320,12 +314,12 @@ const Dashboard = () => {
         try {
             setLoading(true);
             if (newTransaction.type === "income") {
-                await axios.post(`${API_BASE}/income/add`, payload, {
-                    headers: getAuthHeader(),
+                await axios.post(`${API_BASE_URL}/income/add`, payload, {
+                    headers: getAuthHeaders(),
                 });
             } else {
-                await axios.post(`${API_BASE}/expense/add`, payload, {
-                    headers: getAuthHeader(),
+                await axios.post(`${API_BASE_URL}/expense/add`, payload, {
+                    headers: getAuthHeaders(),
                 });
             }
             await refreshTransactions();
@@ -463,8 +457,8 @@ const Dashboard = () => {
                     </h3>
                 </div>
 
-                <div className={dashboardStyles.pieChartHeight}>
-                    <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
+                <div className={`${dashboardStyles.pieChartHeight} min-h-[384px]`}>
+                    <ResponsiveContainer width="100%" height={384} minWidth={1}>
                         <PieChart className={chartStyles.pieChart}>
                             <Pie
                                 data={financialOverviewData}

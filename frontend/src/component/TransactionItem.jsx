@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { transactionItemStyles } from '../assets/dummyStyles';
-import { colorClasses } from '../assets/color';
+import { colorClasses } from '../assets/colors';
 
 const TransactionItem = ({
     transaction,
