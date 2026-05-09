@@ -1,13 +1,14 @@
-
 import { createRoot } from 'react-dom/client'
+import 'react-toastify/dist/ReactToastify.css'
 import './index.css'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
-
-
+import ErrorBoundary from './component/ErrorBoundary'
 
 createRoot(document.getElementById('root')).render(
-    <BrowserRouter>
-        <App />
-    </BrowserRouter>
+    <ErrorBoundary>
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
+    </ErrorBoundary>
 )
