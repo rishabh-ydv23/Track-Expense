@@ -13,7 +13,7 @@ const MENU_ITEMS = [
     { text: "Profile", path: "/profile", icon: <User size={20} /> },
 ];
 
-const Sidebar = ({ user, isCollapsed, setIsCollapsed }) => {
+const Sidebar = ({ user, isCollapsed, setIsCollapsed, onLogout }) => {
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const sidebarRef = useRef(null);
@@ -43,6 +43,10 @@ const Sidebar = ({ user, isCollapsed, setIsCollapsed }) => {
     // to logout
     const handleLogout = () => {
         localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("user");
+        onLogout?.();
         navigate("/login");
     };
 

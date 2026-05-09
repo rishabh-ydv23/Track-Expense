@@ -4,7 +4,7 @@ import { navbarStyles } from '../assets/dummyStyles.js'
 import { ChevronDown, User, LogOut } from 'lucide-react';
 import img1 from '../assets/logo.png'
 import axios from 'axios'
-const BASE_URL = "http://localhost:3000/api"
+import { API_BASE_URL, getAuthToken } from '../config/api'
 
 
 const Navbar = ({ user: propUser, onLogout }) => {
@@ -22,10 +22,10 @@ const Navbar = ({ user: propUser, onLogout }) => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const token = localStorage.getItem("token");
+                const token = getAuthToken();
                 if (!token) return;
 
-                const response = await axios.get(`${BASE_URL}/users/me`, {
+                const response = await axios.get(`${API_BASE_URL}/user/me`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 const userData = response.data.user || response.data;
@@ -47,6 +47,9 @@ const Navbar = ({ user: propUser, onLogout }) => {
     const handleLogout = () => {
         setMenuOpen(false);
         localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("user");
         onLogout?.();
         navigate("/login");
     };
