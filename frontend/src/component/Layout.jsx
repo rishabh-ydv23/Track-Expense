@@ -7,10 +7,9 @@ import { Plus } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { LineChart, Line } from 'recharts';
 import { PieChart, Pie, Cell } from 'recharts';
-import { TrendingUp, DollarSign, ArrowUp, ArrowDown, PiggyBank, Home, ShoppingCart, Utensils, Car, Gift, Zap, Activity, CreditCard, Clock, RefreshCw, Info, Filter, ChevronDown } from 'lucide-react';
-import { Outlet } from 'react-router-dom';
-
-const API_BASE = "http://localhost:3000/api"
+import { TrendingUp, DollarSign, ArrowUp, ArrowDown, PiggyBank, Home, ShoppingCart, Utensils, Car, Gift, Zap, Activity, CreditCard, Clock, RefreshCw, Info, Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { API_BASE_URL, getAuthHeaders } from '../config/api'
 const CATEGORY_ICONS = {
     Food: <Utensils className="w-4 h-4" />,
     Housing: <Home className="w-4 h-4" />,
@@ -57,7 +56,16 @@ const safeArrayFromResponse = (res) => {
 };
 
 
+const pathTitle = (pathname) => {
+    if (pathname.startsWith("/income")) return { title: "Income", subtitle: "Track your earnings" };
+    if (pathname.startsWith("/expense")) return { title: "Expenses", subtitle: "Track your spending" };
+    if (pathname.startsWith("/profile")) return { title: "Profile", subtitle: "Your account" };
+    return { title: "Dashboard", subtitle: "Welcome Back" };
+};
+
 const Layout = ({ onLogout, user }) => {
+    const { pathname } = useLocation();
+    const { title: headerTitle, subtitle: headerSubtitle } = pathTitle(pathname);
     const [transactions, setTransactions] = useState([]);
     const [timeFrame, setTimeFrame] = useState("monthly");
     const [loading, setLoading] = useState(false);
@@ -70,12 +78,11 @@ const Layout = ({ onLogout, user }) => {
     const fetchTransactions = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem("token");
-            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            const headers = getAuthHeaders();
 
             const [incomeRes, expenseRes] = await Promise.all([
-                axios.get(`${API_BASE}/income/get`, { headers }),
-                axios.get(`${API_BASE}/expense/get`, { headers }),
+                axios.get(`${API_BASE_URL}/income/get`, { headers }),
+                axios.get(`${API_BASE_URL}/expense/get`, { headers }),
             ]);
 
             const incomes = safeArrayFromResponse(incomeRes).map((i) => ({
@@ -113,11 +120,10 @@ const Layout = ({ onLogout, user }) => {
 
     const addTransaction = async (transaction) => {
         try {
-            const token = localStorage.getItem("token");
-            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            const headers = getAuthHeaders();
             const endpoint =
                 transaction.type === "income" ? "income/add" : "expense/add";
-            await axios.post(`${API_BASE}/${endpoint}`, transaction, { headers });
+            await axios.post(`${API_BASE_URL}/${endpoint}`, transaction, { headers });
             await fetchTransactions();
             return true;
         } catch (err) {
@@ -131,11 +137,10 @@ const Layout = ({ onLogout, user }) => {
 
     const editTransaction = async (id, transaction) => {
         try {
-            const token = localStorage.getItem("token");
-            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            const headers = getAuthHeaders();
             const endpoint =
                 transaction.type === "income" ? "income/update" : "expense/update";
-            await axios.put(`${API_BASE}/${endpoint}/${id}`, transaction, {
+            await axios.put(`${API_BASE_URL}/${endpoint}/${id}`, transaction, {
                 headers,
             });
             await fetchTransactions();
@@ -151,10 +156,9 @@ const Layout = ({ onLogout, user }) => {
 
     const deleteTransaction = async (id, type) => {
         try {
-            const token = localStorage.getItem("token");
-            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            const headers = getAuthHeaders();
             const endpoint = type === "income" ? "income/delete" : "expense/delete";
-            await axios.delete(`${API_BASE}/${endpoint}/${id}`, { headers });
+            await axios.delete(`${API_BASE_URL}/${endpoint}/${id}`, { headers });
             await fetchTransactions();
             return true;
         } catch (err) {
@@ -289,12 +293,12 @@ const Layout = ({ onLogout, user }) => {
     return (
         <div className={styles.layout.root}>
             <Navbar user={user} onLogout={onLogout} />
-            <Sidebar user={user} isCollapsed={sidebarCollapsed} setIsCollapsed={setSidebarCollapsed} />
+            <Sidebar user={user} isCollapsed={sidebarCollapsed} setIsCollapsed={setSidebarCollapsed} onLogout={onLogout} />
             <div className={styles.layout.mainContainer(sidebarCollapsed)}>
                 <div className={styles.header.container}>
                     <div>
-                        <h1 className={styles.header.title}>Dashboard</h1>
-                        <p className={styles.header.subtitle}>Welcome Back</p>
+                        <h1 className={styles.header.title}>{headerTitle}</h1>
+                        <p className={styles.header.subtitle}>{headerSubtitle}</p>
                     </div>
                 </div>
                 <div className={styles.statCards.grid}>
