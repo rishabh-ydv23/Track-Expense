@@ -22,15 +22,14 @@ import {
 } from "recharts";
 import axios from "axios";
 import { exportToExcel } from "../utils/exportUtils";
-import FinancialCard from "../components/FinancialCard";
-import TimeFrameSelector from "../components/TimeFrame";
-import TransactionItem from "../components/TransactionItem";
-import AddTransactionModal from "../components/Add";
-import { getTimeFrameRange, generateChartPoints } from "../components/Helpers";
-import { CATEGORY_ICONS } from "../assets/color";
+import FinancialCard from "../component/FinancialCard";
+import TimeFrameSelector from "../component/TimeFrame";
+import TransactionItem from "../component/TransactionItem";
+import AddTransactionModal from "../component/Add";
+import { getTimeFrameRange, generateChartPoints } from "../component/Helpers";
+import { CATEGORY_ICONS } from "../assets/colors";
 import { expensePageStyles as styles } from "../assets/dummyStyles";
-
-const API_BASE = "http://localhost:4000/api";
+import { API_BASE_URL, getAuthHeaders } from "../config/api";
 
 /**
  * Helper: convert date (or datetime) to ISO by attaching client current time
@@ -54,7 +53,7 @@ function toIsoWithClientTime(dateValue) {
     // Already a datetime or ISO-like string
     try {
         return new Date(dateValue).toISOString();
-    } catch (err) {
+    } catch {
         return new Date().toISOString();
     }
 }
@@ -66,7 +65,7 @@ const ExpensePage = () => {
         timeFrame = "monthly",
         setTimeFrame = () => { },
         refreshTransactions
-    } = useOutletContext();
+    } = useOutletContext() ?? {};
 
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState(null);
@@ -87,7 +86,7 @@ const ExpensePage = () => {
         type: "expense",
         category: "Food",
     });
-    const [setOverview] = useState({
+    const [, setOverview] = useState({
         totalExpense: 0,
         averageExpense: 0,
         numberOfTransactions: 0,
@@ -95,16 +94,10 @@ const ExpensePage = () => {
         range: "monthly",
     });
 
-    // Auth headers helper
-    const getAuthHeaders = useCallback(() => {
-        const token = localStorage.getItem("token");
-        return token ? { Authorization: `Bearer ${token}` } : {};
-    }, []);
-
     // Fetch overview (GET /expense/overview?range=...)
     const fetchOverview = useCallback(async (range = timeFrame ?? "monthly") => {
         try {
-            const res = await axios.get(`${API_BASE}/expense/overview`, {
+            const res = await axios.get(`${API_BASE_URL}/expense/overview`, {
                 headers: getAuthHeaders(),
                 params: { range },
             });
@@ -119,7 +112,7 @@ const ExpensePage = () => {
         } catch (err) {
             console.error("Failed to fetch expense overview:", err);
         }
-    }, [timeFrame, getAuthHeaders]);
+    }, [timeFrame]);
 
     // Initial load
     useEffect(() => {
@@ -235,7 +228,7 @@ const ExpensePage = () => {
             setLoading(true);
             const config = {
                 method,
-                url: `${API_BASE}${url}`,
+                url: `${API_BASE_URL}${url}`,
                 headers: { "Content-Type": "application/json", ...getAuthHeaders() },
             };
 
@@ -288,7 +281,7 @@ const ExpensePage = () => {
                 category: "Food",
             });
             setShowModal(false);
-        } catch (err) {
+        } catch {
             // Error handled in handleApiRequest
         }
     };
@@ -307,7 +300,7 @@ const ExpensePage = () => {
 
             await handleApiRequest('put', `/expense/update/${editingId}`, payload);
             setEditingId(null);
-        } catch (err) {
+        } catch {
             // Error handled in handleApiRequest
         }
     };
@@ -321,7 +314,7 @@ const ExpensePage = () => {
     // Export -> GET /expense/downloadexcel (server) with client fallback
     const handleExport = async () => {
         try {
-            const res = await axios.get(`${API_BASE}/expense/downloadexcel`, {
+const res = await axios.get(`${API_BASE_URL}/expense/downloadexcel`, {
                 headers: getAuthHeaders(),
                 responseType: "blob",
             });
@@ -459,8 +452,8 @@ const ExpensePage = () => {
                     </button>
                 </div>
 
-                <div className={styles.chartHeight}>
-                    <ResponsiveContainer width="100%" height="100%">
+                <div className={`${styles.chartHeight} min-h-64`}>
+                    <ResponsiveContainer width="100%" height={320} minWidth={1}>
                         <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                             <defs>
                                 <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">

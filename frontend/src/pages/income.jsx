@@ -23,15 +23,14 @@ import {
 } from "recharts";
 import axios from "axios";
 import { exportToExcel } from "../utils/exportUtils";
-import AddTransactionModal from "../components/Add";
-import TransactionItem from "../components/TransactionItem";
-import TimeFrameSelector from "../components/TimeFrame";
-import FinancialCard from "../components/FinancialCard";
-import { getTimeFrameRange, generateChartPoints } from "../components/Helpers";
-import { INCOME_COLORS, CATEGORY_ICONS_Inc } from "../assets/color";
+import AddTransactionModal from "../component/Add";
+import TransactionItem from "../component/TransactionItem";
+import TimeFrameSelector from "../component/TimeFrame";
+import FinancialCard from "../component/FinancialCard";
+import { getTimeFrameRange, generateChartPoints } from "../component/Helpers";
+import { INCOME_COLORS, CATEGORY_ICONS_Inc } from "../assets/colors";
 import { incomeStyles as styles } from "../assets/dummyStyles";
-
-const API_BASE = "http://localhost:4000/api";
+import { API_BASE_URL, getAuthHeaders } from "../config/api";
 
 function toIsoWithClientTime(dateValue) {
     if (!dateValue) {
@@ -47,7 +46,7 @@ function toIsoWithClientTime(dateValue) {
 
     try {
         return new Date(dateValue).toISOString();
-    } catch (err) {
+    } catch {
         return new Date().toISOString();
     }
 }
@@ -70,8 +69,8 @@ const IncomeChart = ({ chartData, timeFrame, timeFrameRange }) => (
             </h3>
         </div>
 
-        <div className={styles.chartHeight}>
-            <ResponsiveContainer width="100%" height="100%">
+        <div className={`${styles.chartHeight} min-h-64`}>
+            <ResponsiveContainer width="100%" height={320} minWidth={1}>
                 <BarChart
                     data={chartData}
                     margin={{ top: 20, right: 20, left: 10, bottom: 20 }}
@@ -171,7 +170,7 @@ const Income = () => {
         timeFrame = "monthly",
         setTimeFrame = () => { },
         refreshTransactions,
-    } = useOutletContext();
+    } = useOutletContext() ?? {};
 
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState(null);
@@ -198,11 +197,6 @@ const Income = () => {
         category: "Salary",
         date: new Date().toISOString().split("T")[0],
     });
-
-    const getAuthHeaders = useCallback(() => {
-        const token = localStorage.getItem("token");
-        return token ? { Authorization: `Bearer ${token}` } : {};
-    }, []);
 
     const timeFrameRange = useMemo(
         () => getTimeFrameRange(timeFrame, null),
@@ -283,7 +277,7 @@ const Income = () => {
     const fetchOverview = useCallback(
         async (range = timeFrame ?? "monthly") => {
             try {
-                const res = await axios.get(`${API_BASE}/income/overview`, {
+                const res = await axios.get(`${API_BASE_URL}/income/overview`, {
                     headers: getAuthHeaders(),
                     params: { range },
                 });
@@ -302,7 +296,7 @@ const Income = () => {
                 console.error("Failed to fetch overview:", err);
             }
         },
-        [timeFrame, getAuthHeaders],
+        [timeFrame],
     );
 
     useEffect(() => {
@@ -352,7 +346,7 @@ const Income = () => {
                 date: toIsoWithClientTime(newTransaction.date),
             };
 
-            await axios.post(`${API_BASE}/income/add`, payload, {
+            await axios.post(`${API_BASE_URL}/income/add`, payload, {
                 headers: { "Content-Type": "application/json", ...getAuthHeaders() },
             });
             await refreshTransactions();
@@ -375,7 +369,6 @@ const Income = () => {
         }
     }, [
         newTransaction,
-        getAuthHeaders,
         refreshTransactions,
         fetchOverview,
         timeFrame,
@@ -394,7 +387,7 @@ const Income = () => {
                 date: toIsoWithClientTime(editForm.date),
             };
 
-            await axios.put(`${API_BASE}/income/update/${editingId}`, payload, {
+            await axios.put(`${API_BASE_URL}/income/update/${editingId}`, payload, {
                 headers: { "Content-Type": "application/json", ...getAuthHeaders() },
             });
 
@@ -412,7 +405,6 @@ const Income = () => {
     }, [
         editingId,
         editForm,
-        getAuthHeaders,
         refreshTransactions,
         fetchOverview,
         timeFrame,
@@ -426,7 +418,7 @@ const Income = () => {
 
             try {
                 setLoading(true);
-                await axios.delete(`${API_BASE}/income/delete/${id}`, {
+                await axios.delete(`${API_BASE_URL}/income/delete/${id}`, {
                     headers: getAuthHeaders(),
                 });
 
@@ -440,12 +432,12 @@ const Income = () => {
                 setLoading(false);
             }
         },
-        [getAuthHeaders, refreshTransactions, fetchOverview, timeFrame],
+        [refreshTransactions, fetchOverview, timeFrame],
     );
 
     const handleExport = useCallback(async () => {
         try {
-            const res = await axios.get(`${API_BASE}/income/downloadexcel`, {
+            const res = await axios.get(`${API_BASE_URL}/income/downloadexcel`, {
                 headers: getAuthHeaders(),
                 responseType: "blob",
             });
@@ -484,7 +476,7 @@ const Income = () => {
                 alert("Failed to export data.");
             }
         }
-    }, [getAuthHeaders, filteredTransactions]);
+    }, [filteredTransactions]);
 
     return (
         <div className={styles.wrapper}>
