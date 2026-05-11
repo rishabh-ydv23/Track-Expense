@@ -11,7 +11,7 @@ export const dashboardStyles = {
   headerSubtitle: "text-gray-600 mt-2",
   
   // Button styles
-  addButton: "flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white px-5 py-3 rounded-xl transition-all shadow hover:shadow-md font-medium",
+  addButton: "flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white px-5 py-3 rounded-xl transition-all shadow hover:shadow-md active:scale-[0.98] active:shadow-inner cursor-pointer font-medium",
   
   // Time frame selector styles
   timeFrameContainer: "flex justify-end mt-4",
@@ -124,7 +124,7 @@ export const incomeStyles = {
   header: "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4 mb-4 md:mb-6",
   headerTitle: "text-xl md:text-2xl lg:text-3xl font-bold text-gray-800",
   headerSubtitle: "text-gray-600 mt-1 text-sm md:text-base",
-  addButton: "flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-3 py-2 md:px-4 md:py-3 rounded-lg md:rounded-xl transition-all shadow-md hover:shadow-lg font-medium text-sm md:text-base",
+  addButton: "flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-3 py-2 md:px-4 md:py-3 rounded-lg md:rounded-xl transition-all shadow-md hover:shadow-lg active:scale-[0.98] active:shadow-inner cursor-pointer font-medium text-sm md:text-base",
   
   // Summary Cards
   summaryGrid: "grid grid-cols-1 -mx-4 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5",
@@ -200,7 +200,7 @@ export const expensePageStyles = {
   headerContainer: "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4 mb-4 md:mb-6",
   headerTitle: "text-2xl md:text-3xl font-bold text-gray-800",
   headerSubtitle: "text-gray-600 mt-1",
-  addButton: "flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-4 py-3 rounded-xl transition-all shadow-md hover:shadow-lg font-medium",
+  addButton: "flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-4 py-3 rounded-xl transition-all shadow-md hover:shadow-lg active:scale-[0.98] active:shadow-inner cursor-pointer font-medium",
   
   // Financial cards grid
   cardsGrid: "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-5",
@@ -334,14 +334,14 @@ export const modalStyles = {
   // Type buttons
   typeButtonContainer: "flex gap-4",
   typeButton: (isSelected, color) => 
-    `flex-1 py-2 rounded-lg font-medium ${
+    `flex-1 py-2 rounded-lg font-medium transition-all duration-150 ${
       isSelected 
         ? `${color} text-white shadow-md` 
-        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+        : 'bg-gray-100 text-gray-800 hover:bg-gray-200 active:bg-gray-300'
     }`,
   
   // Submit button
-  submitButton: (color) => `w-full text-white py-3 rounded-lg font-medium mt-4 shadow-md hover:shadow-lg transition-all ${color}`,
+  submitButton: (color) => `w-full text-white py-3 rounded-lg font-medium mt-4 shadow-md hover:shadow-lg active:scale-[0.98] active:shadow-inner transition-all duration-150 ${color}`,
   
   // Color classes
   colorClasses: {
