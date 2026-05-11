@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, memo } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import { Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, User, Mail, Calendar, Lock, X } from "lucide-react";
