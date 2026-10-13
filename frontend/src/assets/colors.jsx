@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 
+// Ye ek object hai jisme Income, Spent aur Savings ke liye colors define kiye gaye hain.
 export const GAUGE_COLORS = {
   Income: { 
     gradientStart: '#0d9488',

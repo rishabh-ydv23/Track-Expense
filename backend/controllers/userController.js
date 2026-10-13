@@ -36,7 +36,7 @@ export async function registerUser(req, res) {
 
     try {
         if (await User.findOne({ email })) {
-            return res.status(400).json({
+            return res.status(409).json({
                 success: false,
                 message: "User already exists"
             })
@@ -115,7 +115,6 @@ export async function loginUser(req, res) {
 
 
 //to get user details
-
 export async function getCurrentUser(req, res) {
     try {
         const user = await User.findById(req.user.id).select("name email");
@@ -151,7 +150,11 @@ export async function updateProfile(req, res) {
     }
 
     try {
-        const exists = await User.findOne({ email, _id: { $ne: req.user.id } });
+        const exists = await User.findOne({ 
+            email,
+            _id: { $ne: req.user.id }
+        });
+
         if (exists) {
             return res.status(409).json({
                 success: false,
@@ -174,7 +177,7 @@ export async function updateProfile(req, res) {
         res.status(500).json({
             success: false,
             message: "Server error"
-        });
+        });  
     }
 }
 

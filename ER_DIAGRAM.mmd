@@ -1,0 +1,37 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#E3F2FD', 'primaryTextColor': '#0F172A', 'primaryBorderColor': '#2563EB', 'lineColor': '#475569', 'secondaryColor': '#ECFDF5', 'tertiaryColor': '#FFF7ED'}}}%%
+erDiagram
+    USER ||--o{ EXPENSE : has
+    USER ||--o{ INCOME : has
+
+    USER {
+        ObjectId _id PK
+        string name
+        string email UK
+        string password
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    EXPENSE {
+        ObjectId _id PK
+        string description
+        number amount
+        string category
+        date date
+        ObjectId userId FK
+        string type
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    INCOME {
+        ObjectId _id PK
+        string description
+        number amount
+        string category
+        date date
+        ObjectId userId FK
+        string type
+        datetime createdAt
+        datetime updatedAt
+    }

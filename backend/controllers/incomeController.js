@@ -43,6 +43,7 @@ export async function addIncome(req, res) {
 
 }
 
+
 //to get income all
 export async function getAllIncomes(req, res) {
     const userId = req.user.id;
